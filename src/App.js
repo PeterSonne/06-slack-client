@@ -1,5 +1,5 @@
 import React, { Component } from "react";
-import { BrowserRouter, Switch, Route } from "react-router-dom";
+import { BrowserRouter, Switch, Route, Redirect } from "react-router-dom";
 import Chat from "./Chat";
 import Login from "./Login";
 import Signup from "./Signup";
@@ -14,7 +14,16 @@ class App extends Component {
         <Switch>
           <Route path="/login" component={Login} />
           <Route path="/signup" component={Signup} />
-          <Route path="/" component={Chat} />
+          <Route
+            path="/"
+            render={() =>
+              localStorage.getItem("token") != null ? (
+                <Chat />
+              ) : (
+                <Redirect to="/login" />
+              )
+            }
+          />
         </Switch>
       </BrowserRouter>
     );
