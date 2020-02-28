@@ -15,6 +15,7 @@ class Login extends React.Component {
     e.preventDefault();
     this.setState({ errorMsg: "" });
     if (Object.values(this.state.user).filter(e => e.length == 0).length > 0) {
+      this.setState({ errorMsg: "All fields are required" });
       return;
     }
     Axios.post(`${process.env.REACT_APP_API}/users/login`, this.state.user)
