@@ -9,7 +9,8 @@ class Content extends Component {
   state = {
     newMessage: {
       text: "",
-      file: null
+      file: null,
+      channel: ""
     },
     messages: []
   };
@@ -34,6 +35,20 @@ class Content extends Component {
   };
   createMessage = e => {
     e.preventDefault();
+    axios
+      .post(`${process.env.REACT_APP_API}/messages`, this.state.newMessage, {
+        headers: { authorization: `Bearer ${localStorage.getItem("token")}` }
+      })
+      .then(doc => {
+        if (doc.status == 200) {
+          let messages = this.state.messages;
+          messages.push(doc.data);
+          let newMessage = this.state.newMessage;
+          newMessage.text = "";
+          this.setState({ messages: messages, newMessage: newMessage });
+        }
+      })
+      .catch(err => console.log(err));
   };
   loadChannel = id => {
     if (!id || id == "") {
@@ -44,7 +59,10 @@ class Content extends Component {
         headers: { authorization: `Bearer ${localStorage.getItem("token")}` }
       })
       .then(res => {
-        this.setState({ messages: res.data });
+        this.setState({
+          messages: res.data,
+          newMessage: { channel: id, text: "" }
+        });
       })
       .catch(err => console.log(err));
   };
@@ -60,7 +78,7 @@ class Content extends Component {
                   {message.user == null ? "delete" : message.user.name}
                 </span>
                 <span className="date">
-                  {moment(moment(message.date)).format("D. MMM. YYYY - HH:mm")}
+                  {moment(message.date).format("D. MMM. YYYY - HH:mm")}
                 </span>
                 <div className="body">{message.text}</div>
                 -> Insert Image
@@ -79,7 +97,7 @@ class Content extends Component {
               type="text"
               placeholder="New Message..."
               value={this.state.newMessage.text}
-              onChange={e => this.changeText(e)}
+              onChange={this.changeText}
             />
             <button type="submit" className="positive">
               Send
