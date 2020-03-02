@@ -46,6 +46,7 @@ class Content extends Component {
           let newMessage = this.state.newMessage;
           newMessage.text = "";
           this.setState({ messages: messages, newMessage: newMessage });
+          this.contentScrollBottom();
         }
       })
       .catch(err => console.log(err));
@@ -63,8 +64,13 @@ class Content extends Component {
           messages: res.data,
           newMessage: { channel: id, text: "" }
         });
+        this.contentScrollBottom();
       })
       .catch(err => console.log(err));
+  };
+  contentScrollBottom = () => {
+    let elem = document.querySelector("#content");
+    elem.scrollTop = elem.scrollHeight;
   };
   // Render
   render() {
