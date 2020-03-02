@@ -2,6 +2,7 @@ import React, { Component } from "react";
 import "./styles/Messages.css";
 import "./styles/NewMessage.css";
 import axios from "axios";
+import moment from "moment";
 
 class Content extends Component {
   // Data
@@ -14,14 +15,16 @@ class Content extends Component {
   };
   // Lifecycle
   componentWillMount() {
-    axios
-      .get(`${process.env.REACT_APP_API}/messages`, {
-        headers: { authorization: `Bearer ${localStorage.getItem("token")}` }
-      })
-      .then(res => {
-        this.setState({ messages: res.data });
-      })
-      .catch(err => console.log(err));
+    if (!this.props.channelId || this.props.channelId == "") {
+      return;
+    }
+    this.loadChannel(this.props.channelId);
+  }
+  componentWillReceiveProps(newProps) {
+    if (!newProps.channelId || newProps.channelId == "") {
+      return;
+    }
+    this.loadChannel(newProps.channelId);
   }
   // Methods
   changeText = e => {
@@ -31,6 +34,19 @@ class Content extends Component {
   };
   createMessage = e => {
     e.preventDefault();
+  };
+  loadChannel = id => {
+    if (!id || id == "") {
+      return;
+    }
+    axios
+      .get(`${process.env.REACT_APP_API}/messages?channel=${id}`, {
+        headers: { authorization: `Bearer ${localStorage.getItem("token")}` }
+      })
+      .then(res => {
+        this.setState({ messages: res.data });
+      })
+      .catch(err => console.log(err));
   };
   // Render
   render() {
@@ -43,7 +59,9 @@ class Content extends Component {
                 <span className="user">
                   {message.user == null ? "delete" : message.user.name}
                 </span>
-                <span className="date">Insert Date</span>
+                <span className="date">
+                  {moment(moment(message.date)).format("D. MMM. YYYY - HH:mm")}
+                </span>
                 <div className="body">{message.text}</div>
                 -> Insert Image
               </div>

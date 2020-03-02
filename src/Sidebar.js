@@ -22,6 +22,7 @@ class Sidebar extends Component {
             return e;
           })
         });
+        this.props.onChangeChannel(docs.data[0]._id);
       })
       .catch(err => console.log(err));
   }
@@ -37,6 +38,7 @@ class Sidebar extends Component {
       return e;
     });
     this.setState({ channels });
+    this.props.onChangeChannel(id);
   };
   // Render
   render() {
